@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28010.2046
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WFLite.EntityFrameworkCore", "src\WFLite.EntityFrameworkCore\WFLite.EntityFrameworkCore.csproj", "{6C51256C-85F8-498B-ACD4-F0DEA23F541A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WFLite.EntityFramework.HelloWorld", "examples\WFLite.EntityFramework.HelloWorld\WFLite.EntityFramework.HelloWorld.csproj", "{A368F2A2-9E4C-4BD2-8714-8BBB8774E404}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6C51256C-85F8-498B-ACD4-F0DEA23F541A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6C51256C-85F8-498B-ACD4-F0DEA23F541A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6C51256C-85F8-498B-ACD4-F0DEA23F541A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6C51256C-85F8-498B-ACD4-F0DEA23F541A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A368F2A2-9E4C-4BD2-8714-8BBB8774E404}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A368F2A2-9E4C-4BD2-8714-8BBB8774E404}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A368F2A2-9E4C-4BD2-8714-8BBB8774E404}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A368F2A2-9E4C-4BD2-8714-8BBB8774E404}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {73202F4D-80B8-46A6-9A8C-EE09CC2A200F}
+	EndGlobalSection
+EndGlobal
