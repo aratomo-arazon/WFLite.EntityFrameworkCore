@@ -8,6 +8,8 @@
  */
  
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using WFLite.Logging.Bases;
 
 namespace WFLite.EntityFrameworkCore.Bases
 {
@@ -27,5 +29,24 @@ namespace WFLite.EntityFrameworkCore.Bases
         }
 
         protected abstract object convert(TDbContext dbContext, object value);
+    }
+
+    public abstract class DbContextConverter<TCategoryName, TDbContext> : LoggingConverter<TCategoryName>
+        where TDbContext : DbContext
+    {
+        private readonly TDbContext _dbContext;
+
+        public DbContextConverter(ILogger<TCategoryName> logger, TDbContext dbContext)
+            : base(logger)
+        {
+            _dbContext = dbContext;
+        }
+
+        protected sealed override object convert(ILogger<TCategoryName> logger, object value)
+        {
+            return convert(logger, _dbContext, value);
+        }
+
+        protected abstract object convert(ILogger<TCategoryName> logger, TDbContext dbContext, object value);
     }
 }

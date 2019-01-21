@@ -19,7 +19,7 @@ namespace WFLite.EntityFramework.HelloWorld
         static async Task Main(string[] args)
         {
             var options = new DbContextOptionsBuilder<MessageDbContext>()
-                .UseInMemoryDatabase(databaseName: "Test")
+                .UseInMemoryDatabase("Test")
                 .Options;
 
             using (var dbContext = new MessageDbContext(options))

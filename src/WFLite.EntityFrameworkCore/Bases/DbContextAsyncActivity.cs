@@ -8,9 +8,11 @@
  */
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System.Threading;
 using System.Threading.Tasks;
 using WFLite.Activities;
+using WFLite.Logging.Bases;
 
 namespace WFLite.EntityFrameworkCore.Bases
 {
@@ -30,5 +32,24 @@ namespace WFLite.EntityFrameworkCore.Bases
         }
 
         protected abstract Task<bool> run(TDbContext dbContext, CancellationToken cancellationToken);
+    }
+
+    public abstract class DbContextAsyncActivity<TCategoryName, TDbContext> : LoggingAsyncActivity<TCategoryName>
+        where TDbContext : DbContext
+    {
+        private readonly TDbContext _dbContext;
+
+        public DbContextAsyncActivity(ILogger<TCategoryName> logger, TDbContext dbContext)
+            : base(logger)
+        {
+            _dbContext = dbContext;
+        }
+
+        protected sealed override Task<bool> run(ILogger<TCategoryName> logger, CancellationToken cancellationToken)
+        {
+            return run(logger, _dbContext, cancellationToken);
+        }
+
+        protected abstract Task<bool> run(ILogger<TCategoryName> logger, TDbContext dbContext, CancellationToken cancellationToken);
     }
 }

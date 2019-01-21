@@ -10,7 +10,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.2.1" />
-    <PackageReference Include="WFLite" Version="1.0.1" />
+    <PackageReference Include="WFLite.Logging" Version="1.0.2" />
   </ItemGroup>
 
 </Project>
