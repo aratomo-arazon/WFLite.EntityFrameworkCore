@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <Authors>aratomo-arazon</Authors>
-    <Version>1.0.1</Version>
+    <Version>1.0.2</Version>
     <Copyright>Copyright (c) 2019 aratomo-arazon</Copyright>
     <Description>WFLite.EntityFrameworkCore is a WFLite utility library for EntityFrameworkCore.</Description>
   </PropertyGroup>
