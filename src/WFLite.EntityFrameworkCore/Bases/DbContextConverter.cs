@@ -9,6 +9,7 @@
  
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using System;
 using WFLite.Logging.Bases;
 
 namespace WFLite.EntityFrameworkCore.Bases
@@ -18,14 +19,31 @@ namespace WFLite.EntityFrameworkCore.Bases
     {
         private readonly TDbContext _dbContext;
 
+        private readonly Func<TDbContext> _dbContextFunc;
+
         public DbContextConverter(TDbContext dbContext)
         {
             _dbContext = dbContext;
         }
 
+        public DbContextConverter(Func<TDbContext> dbContextFunc)
+        {
+            _dbContextFunc = dbContextFunc;
+        }
+
         protected sealed override object convert(object value)
         {
-            return convert(_dbContext, value);
+            if (_dbContextFunc != null)
+            {
+                using (var dbContext = _dbContextFunc())
+                {
+                    return convert(dbContext);
+                }
+            }
+            else
+            {
+                return convert(_dbContext, value);
+            }
         }
 
         protected abstract object convert(TDbContext dbContext, object value);
@@ -36,15 +54,33 @@ namespace WFLite.EntityFrameworkCore.Bases
     {
         private readonly TDbContext _dbContext;
 
+        private readonly Func<TDbContext> _dbContextFunc;
+
         public DbContextConverter(ILogger<TCategoryName> logger, TDbContext dbContext)
             : base(logger)
         {
             _dbContext = dbContext;
         }
 
+        public DbContextConverter(ILogger<TCategoryName> logger, Func<TDbContext> dbContextFunc)
+            : base(logger)
+        {
+            _dbContextFunc = dbContextFunc;
+        }
+
         protected sealed override object convert(ILogger<TCategoryName> logger, object value)
         {
-            return convert(logger, _dbContext, value);
+            if (_dbContextFunc != null)
+            {
+                using (var dbContext = _dbContextFunc())
+                {
+                    return convert(logger, dbContext, value);
+                }
+            }
+            else
+            {
+                return convert(logger, _dbContext, value);
+            }
         }
 
         protected abstract object convert(ILogger<TCategoryName> logger, TDbContext dbContext, object value);
