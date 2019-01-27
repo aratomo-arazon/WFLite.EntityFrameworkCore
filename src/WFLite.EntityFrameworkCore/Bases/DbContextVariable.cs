@@ -29,9 +29,9 @@ namespace WFLite.EntityFrameworkCore.Bases
         }
 
         public DbContextVariable(TDbContext dbContext, IConverter converter = null)
+            : base(converter)
         {
             _dbContext = dbContext;
-            Converter = converter;  // TODO
         }
 
         public DbContextVariable(Func<TDbContext> dbContextFunc)
@@ -94,10 +94,9 @@ namespace WFLite.EntityFrameworkCore.Bases
         }
 
         public DbContextVariable(ILogger<TCategoryName> logger, TDbContext dbContext, IConverter converter = null)
-            : base(logger)
+            : base(logger, converter)
         {
             _dbContext = dbContext;
-            Converter = converter;  // TODO
         }
 
         public DbContextVariable(ILogger<TCategoryName> logger, Func<TDbContext> dbContextFunc)
@@ -107,10 +106,9 @@ namespace WFLite.EntityFrameworkCore.Bases
         }
 
         public DbContextVariable(ILogger<TCategoryName> logger, Func<TDbContext> dbContextFunc, IConverter converter = null)
-            : base(logger)
+            : base(logger, converter)
         {
             _dbContextFunc = dbContextFunc;
-            Converter = converter;  // TODO
         }
 
         protected sealed override object getValue(ILogger<TCategoryName> logger)
