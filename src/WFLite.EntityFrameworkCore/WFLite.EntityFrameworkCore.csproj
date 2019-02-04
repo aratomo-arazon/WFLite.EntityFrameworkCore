@@ -5,7 +5,7 @@
     <Authors>aratomo-arazon</Authors>
     <Version>1.1.0</Version>
     <Copyright>Copyright (c) 2019 aratomo-arazon</Copyright>
-    <Description>WFLite.EntityFrameworkCore is a WFLite utility library for EntityFrameworkCore.</Description>
+    <Description>WFLite.EntityFrameworkCore is a WFLite utility library for Entity Framework Core.</Description>
     <PackageLicenseUrl>https://github.com/aratomo-arazon/WFLite.EntityFrameworkCore/blob/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/aratomo-arazon/WFLite.EntityFrameworkCore</PackageProjectUrl>
     <RepositoryUrl>https://github.com/aratomo-arazon/WFLite.EntityFrameworkCore</RepositoryUrl>
