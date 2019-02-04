@@ -5,24 +5,20 @@ using System.Text;
 using WFLite.EntityFrameworkCore.HelloWorld.Contexts;
 using WFLite.EntityFrameworkCore.HelloWorld.Entities;
 using WFLite.EntityFrameworkCore.Bases;
+using Microsoft.Extensions.Logging;
 
 namespace WFLite.EntityFrameworkCore.HelloWorld.Variables
 {
-    public class MessageValueVariable : DbContextVariable<MessageDbContext>
+    public class MessageValueVariable : DbContextOutVariable<MessageDbContext, string>
     {
         public MessageValueVariable(MessageDbContext dbContext)
-            : base(dbContext)
+            : base(null, dbContext)
         {
         }
 
-        protected sealed override object getValue(MessageDbContext dbContext)
+        protected sealed override object getValue(ILogger logger, MessageDbContext dbContext)
         {
             return dbContext.Messages.FirstOrDefault()?.Value;
-        }
-
-        protected sealed override void setValue(MessageDbContext dbContext, object value)
-        {
-            throw new NotSupportedException();
         }
     }
 }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using WFLite.EntityFrameworkCore.HelloWorld.Contexts;
 using WFLite.EntityFrameworkCore.Bases;
+using Microsoft.Extensions.Logging;
 
 namespace WFLite.EntityFrameworkCore.HelloWorld.Conditions
 {
@@ -14,7 +15,7 @@ namespace WFLite.EntityFrameworkCore.HelloWorld.Conditions
         {
         }
 
-        protected sealed override bool check(MessageDbContext dbContext)
+        protected sealed override bool check(ILogger logger, MessageDbContext dbContext)
         {
             return dbContext.Messages.Any();
         }

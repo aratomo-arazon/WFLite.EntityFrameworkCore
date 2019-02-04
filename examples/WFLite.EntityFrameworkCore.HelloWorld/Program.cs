@@ -33,7 +33,7 @@ namespace WFLite.EntityFrameworkCore.HelloWorld
                             Condition = new MessageAnyCondition(dbContext),
                             Else = new InsertMessageActivity(dbContext)
                             {
-                                Message = new AnyVariable() { Value = "Hello World!" }
+                                Message = new AnyVariable<string>() { Value = "Hello World!" }
                             }
                         },
                         new ConsoleWriteLineActivity()
