@@ -12,11 +12,11 @@ namespace WFLite.EntityFrameworkCore.HelloWorld.Variables
     public class MessageValueVariable : DbContextOutVariable<MessageDbContext, string>
     {
         public MessageValueVariable(MessageDbContext dbContext)
-            : base(null, dbContext)
+            : base(dbContext)
         {
         }
 
-        protected sealed override object getValue(ILogger logger, MessageDbContext dbContext)
+        protected sealed override object getValue(MessageDbContext dbContext)
         {
             return dbContext.Messages.FirstOrDefault()?.Value;
         }

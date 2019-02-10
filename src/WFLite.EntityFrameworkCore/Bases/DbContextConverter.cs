@@ -17,111 +17,141 @@ namespace WFLite.EntityFrameworkCore.Bases
     public abstract class DbContextConverter<TDbContext> : LoggingConverter
         where TDbContext : DbContext
     {
-        private readonly TDbContext _dbContext;
+        private readonly Func<object, object> _func;
 
-        private readonly Func<TDbContext> _dbContextFunc;
+        public DbContextConverter(TDbContext dbContext)
+        {
+            _func = (value) => convert(dbContext, value);
+        }
+
+        public DbContextConverter(Func<TDbContext> dbContextFunc)
+        {
+            _func = (value) =>
+            {
+                using (var dbContext = dbContextFunc())
+                {
+                    return convert(dbContext, value);
+                }
+            };
+        }
 
         public DbContextConverter(ILogger logger, TDbContext dbContext)
             : base(logger)
         {
-            _dbContext = dbContext;
+            _func = (value) => convert(dbContext, value);
         }
 
         public DbContextConverter(ILogger logger, Func<TDbContext> dbContextFunc)
             : base(logger)
         {
-            _dbContextFunc = dbContextFunc;
-        }
-
-        protected sealed override object convert(ILogger logger, object value)
-        {
-            if (_dbContextFunc != null)
+            _func = (value) =>
             {
-                using (var dbContext = _dbContextFunc())
+                using (var dbContext = dbContextFunc())
                 {
-                    return convert(dbContext, logger, value);
+                    return convert(dbContext, value);
                 }
-            }
-            else
-            {
-                return convert(_dbContext, logger, value);
-            }
+            };
         }
 
-        protected abstract object convert(TDbContext dbContext, ILogger logger, object value);
+        protected sealed override object convert(object value)
+        {
+            return _func(value);
+        }
+
+        protected abstract object convert(TDbContext dbContext, object value);
     }
 
     public abstract class DbContextConverter<TDbContext, TValue> : LoggingConverter<TValue>
         where TDbContext : DbContext
     {
-        private readonly TDbContext _dbContext;
+        private readonly Func<object, TValue> _func;
 
-        private readonly Func<TDbContext> _dbContextFunc;
+        public DbContextConverter(TDbContext dbContext)
+        {
+            _func = (value) => convert(dbContext, value);
+        }
+
+        public DbContextConverter(Func<TDbContext> dbContextFunc)
+        {
+            _func = (value) =>
+            {
+                using (var dbContext = dbContextFunc())
+                {
+                    return convert(dbContext, value);
+                }
+            };
+        }
 
         public DbContextConverter(ILogger logger, TDbContext dbContext)
             : base(logger)
         {
-            _dbContext = dbContext;
+            _func = (value) => convert(dbContext, value);
         }
 
         public DbContextConverter(ILogger logger, Func<TDbContext> dbContextFunc)
             : base(logger)
         {
-            _dbContextFunc = dbContextFunc;
-        }
-
-        protected sealed override TValue convert(ILogger logger, object value)
-        {
-            if (_dbContextFunc != null)
+            _func = (value) =>
             {
-                using (var dbContext = _dbContextFunc())
+                using (var dbContext = dbContextFunc())
                 {
-                    return convert(dbContext, logger, value);
+                    return convert(dbContext, value);
                 }
-            }
-            else
-            {
-                return convert(_dbContext, logger, value);
-            }
+            };
         }
 
-        protected abstract TValue convert(TDbContext dbContext, ILogger logger, object value);
+        protected sealed override TValue convert(object value)
+        {
+            return _func(value);
+        }
+
+        protected abstract TValue convert(TDbContext dbContext, object value);
     }
 
     public abstract class DbContextConverter<TDbContext, TInValue, TOutValue> : LoggingConverter<TInValue, TOutValue>
         where TDbContext : DbContext
     {
-        private readonly TDbContext _dbContext;
+        private readonly Func<TInValue, TOutValue> _func;
 
-        private readonly Func<TDbContext> _dbContextFunc;
+        public DbContextConverter(TDbContext dbContext)
+        {
+            _func = (value) => convert(dbContext, value);
+        }
+
+        public DbContextConverter(Func<TDbContext> dbContextFunc)
+        {
+            _func = (value) =>
+            {
+                using (var dbContext = dbContextFunc())
+                {
+                    return convert(dbContext, value);
+                }
+            };
+        }
 
         public DbContextConverter(ILogger logger, TDbContext dbContext)
             : base(logger)
         {
-            _dbContext = dbContext;
+            _func = (value) => convert(dbContext, value);
         }
 
         public DbContextConverter(ILogger logger, Func<TDbContext> dbContextFunc)
             : base(logger)
         {
-            _dbContextFunc = dbContextFunc;
-        }
-
-        protected sealed override TOutValue convert(ILogger logger, TInValue value)
-        {
-            if (_dbContextFunc != null)
+            _func = (value) =>
             {
-                using (var dbContext = _dbContextFunc())
+                using (var dbContext = dbContextFunc())
                 {
-                    return convert(dbContext, logger, value);
+                    return convert(dbContext, value);
                 }
-            }
-            else
-            {
-                return convert(_dbContext, logger, value);
-            }
+            };
         }
 
-        protected abstract TOutValue convert(TDbContext dbContext, ILogger logger, TInValue value);
+        protected sealed override TOutValue convert(TInValue value)
+        {
+            return _func(value);
+        }
+
+        protected abstract TOutValue convert(TDbContext dbContext, TInValue value);
     }
 }

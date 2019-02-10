@@ -19,37 +19,47 @@ namespace WFLite.EntityFrameworkCore.Bases
     public abstract class DbContextAsyncActivity<TDbContext> : LoggingAsyncActivity
         where TDbContext : DbContext
     {
-        private readonly TDbContext _dbContext;
+        private readonly Func<CancellationToken, Task<bool>> _func;
 
-        private readonly Func<TDbContext> _dbContextFunc;
+        public DbContextAsyncActivity(TDbContext dbContext)
+        {
+            _func = (cancellationToken) => run(dbContext, cancellationToken);
+        }
+
+        public DbContextAsyncActivity(Func<TDbContext> dbContextFunc)
+        {
+            _func = (cancellationToken) =>
+            {
+                using (var dbContext = dbContextFunc())
+                {
+                    return run(dbContext, cancellationToken);
+                }
+            };
+        }
 
         public DbContextAsyncActivity(ILogger logger, TDbContext dbContext)
             : base(logger)
         {
-            _dbContext = dbContext;
+            _func = (cancellationToken) => run(dbContext, cancellationToken);
         }
 
         public DbContextAsyncActivity(ILogger logger, Func<TDbContext> dbContextFunc)
             : base(logger)
         {
-            _dbContextFunc = dbContextFunc;
-        }
-
-        protected sealed override Task<bool> run(ILogger logger, CancellationToken cancellationToken)
-        {
-            if (_dbContextFunc != null)
+            _func = (cancellationToken) =>
             {
-                using (var dbContext = _dbContextFunc())
+                using (var dbContext = dbContextFunc())
                 {
-                    return run(logger, dbContext, cancellationToken);
+                    return run(dbContext, cancellationToken);
                 }
-            }
-            else
-            {
-                return run(logger, _dbContext, cancellationToken);
-            }
+            };
         }
 
-        protected abstract Task<bool> run(ILogger logger, TDbContext dbContext, CancellationToken cancellationToken);
+        protected sealed override Task<bool> run(CancellationToken cancellationToken)
+        {
+            return _func(cancellationToken);
+        }
+
+        protected abstract Task<bool> run(TDbContext dbContext, CancellationToken cancellationToken);
     }
 }

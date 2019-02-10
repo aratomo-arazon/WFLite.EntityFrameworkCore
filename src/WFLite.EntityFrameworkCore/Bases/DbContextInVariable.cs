@@ -17,74 +17,94 @@ namespace WFLite.EntityFrameworkCore.Bases
     public abstract class DbContextInVariable<TDbContext> : LoggingInVariable
         where TDbContext : DbContext
     {
-        private readonly TDbContext _dbContext;
+        private readonly Action<object> _action;
 
-        private readonly Func<TDbContext> _dbContextFunc;
+        public DbContextInVariable(TDbContext dbContext)
+        {
+            _action = (value) => setValue(dbContext, value);
+        }
+
+        public DbContextInVariable(Func<TDbContext> dbContextFunc)
+        {
+            _action = (value) =>
+            {
+                using (var dbContext = dbContextFunc())
+                {
+                    setValue(dbContext, value);
+                }
+            };
+        }
 
         public DbContextInVariable(ILogger logger, TDbContext dbContext)
             : base(logger)
         {
-            _dbContext = dbContext;
+            _action = (value) => setValue(dbContext, value);
         }
 
         public DbContextInVariable(ILogger logger, Func<TDbContext> dbContextFunc)
             : base(logger)
         {
-            _dbContextFunc = dbContextFunc;
-        }
-
-        protected sealed override void setValue(ILogger logger, object value)
-        {
-            if (_dbContextFunc != null)
+            _action = (value) =>
             {
-                using (var dbContext = _dbContextFunc())
+                using (var dbContext = dbContextFunc())
                 {
-                    setValue(logger, dbContext, value);
+                    setValue(dbContext, value);
                 }
-            }
-            else
-            {
-                setValue(logger, _dbContext, value);
-            }
+            };
         }
 
-        protected abstract void setValue(ILogger logger, TDbContext dbContext, object value);
+        protected sealed override void setValue(object value)
+        {
+            _action(value);
+        }
+
+        protected abstract void setValue(TDbContext dbContext, object value);
     }
 
     public abstract class DbContextInVariable<TDbContext, TInValue> : LoggingInVariable<TInValue>
         where TDbContext : DbContext
     {
-        private readonly TDbContext _dbContext;
+        private readonly Action<object> _action;
 
-        private readonly Func<TDbContext> _dbContextFunc;
+        public DbContextInVariable(TDbContext dbContext)
+        {
+            _action = (value) => setValue(dbContext, value);
+        }
+
+        public DbContextInVariable(Func<TDbContext> dbContextFunc)
+        {
+            _action = (value) =>
+            {
+                using (var dbContext = dbContextFunc())
+                {
+                    setValue(dbContext, value);
+                }
+            };
+        }
 
         public DbContextInVariable(ILogger logger, TDbContext dbContext)
             : base(logger)
         {
-            _dbContext = dbContext;
+            _action = (value) => setValue(dbContext, value);
         }
 
         public DbContextInVariable(ILogger logger, Func<TDbContext> dbContextFunc)
             : base(logger)
         {
-            _dbContextFunc = dbContextFunc;
-        }
-
-        protected sealed override void setValue(ILogger logger, object value)
-        {
-            if (_dbContextFunc != null)
+            _action = (value) =>
             {
-                using (var dbContext = _dbContextFunc())
+                using (var dbContext = dbContextFunc())
                 {
-                    setValue(logger, dbContext, value);
+                    setValue(dbContext, value);
                 }
-            }
-            else
-            {
-                setValue(logger, _dbContext, value);
-            }
+            };
         }
 
-        protected abstract void setValue(ILogger logger, TDbContext dbContext, object value);
+        protected sealed override void setValue(object value)
+        {
+            _action(value);
+        }
+
+        protected abstract void setValue(TDbContext dbContext, object value);
     }
 }

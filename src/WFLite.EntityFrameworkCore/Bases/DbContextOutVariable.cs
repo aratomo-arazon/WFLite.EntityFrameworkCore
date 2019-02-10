@@ -17,74 +17,94 @@ namespace WFLite.EntityFrameworkCore.Bases
     public abstract class DbContextOutVariable<TDbContext> : LoggingOutVariable
         where TDbContext : DbContext
     {
-        private readonly TDbContext _dbContext;
+        private readonly Func<object> _func; 
 
-        private readonly Func<TDbContext> _dbContextFunc;
+        public DbContextOutVariable(TDbContext dbContext)
+        {
+            _func = () => getValue(dbContext);
+        }
+
+        public DbContextOutVariable(Func<TDbContext> dbContextFunc)
+        {
+            _func = () =>
+            {
+                using (var dbContext = dbContextFunc())
+                {
+                    return getValue(dbContext);
+                }
+            };
+        }
 
         public DbContextOutVariable(ILogger logger, TDbContext dbContext)
             : base(logger)
         {
-            _dbContext = dbContext;
+            _func = () => getValue(dbContext);
         }
 
         public DbContextOutVariable(ILogger logger, Func<TDbContext> dbContextFunc)
             : base(logger)
         {
-            _dbContextFunc = dbContextFunc;
-        }
-
-        protected sealed override object getValue(ILogger logger)
-        {
-            if (_dbContextFunc != null)
+            _func = () =>
             {
-                using (var dbContext = _dbContextFunc())
+                using (var dbContext = dbContextFunc())
                 {
-                    return getValue(logger, dbContext);
+                    return getValue(dbContext);
                 }
-            }
-            else
-            {
-                return getValue(logger, _dbContext);
-            }
+            };
         }
 
-        protected abstract object getValue(ILogger logger, TDbContext dbContext);
+        protected sealed override object getValue()
+        {
+            return _func();
+        }
+
+        protected abstract object getValue(TDbContext dbContext);
     }
 
     public abstract class DbContextOutVariable<TDbContext, TOutValue> : LoggingOutVariable<TOutValue>
         where TDbContext : DbContext
     {
-        private readonly TDbContext _dbContext;
+        private readonly Func<object> _func;
 
-        private readonly Func<TDbContext> _dbContextFunc;
+        public DbContextOutVariable(TDbContext dbContext)
+        {
+            _func = () => getValue(dbContext);
+        }
+
+        public DbContextOutVariable(Func<TDbContext> dbContextFunc)
+        {
+            _func = () =>
+            {
+                using (var dbContext = dbContextFunc())
+                {
+                    return getValue(dbContext);
+                }
+            };
+        }
 
         public DbContextOutVariable(ILogger logger, TDbContext dbContext)
             : base(logger)
         {
-            _dbContext = dbContext;
+            _func = () => getValue(dbContext);
         }
 
         public DbContextOutVariable(ILogger logger, Func<TDbContext> dbContextFunc)
             : base(logger)
         {
-            _dbContextFunc = dbContextFunc;
-        }
-
-        protected sealed override object getValue(ILogger logger)
-        {
-            if (_dbContextFunc != null)
+            _func = () =>
             {
-                using (var dbContext = _dbContextFunc())
+                using (var dbContext = dbContextFunc())
                 {
-                    return getValue(logger, dbContext);
+                    return getValue(dbContext);
                 }
-            }
-            else
-            {
-                return getValue(logger, _dbContext);
-            }
+            };
         }
 
-        protected abstract object getValue(ILogger logger, TDbContext dbContext);
+        protected sealed override object getValue()
+        {
+            return _func();
+        }
+
+        protected abstract object getValue(TDbContext dbContext);
     }
 }

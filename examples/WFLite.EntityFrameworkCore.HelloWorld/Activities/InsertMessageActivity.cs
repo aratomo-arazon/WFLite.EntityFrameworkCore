@@ -28,7 +28,7 @@ namespace WFLite.EntityFrameworkCore.HelloWorld.Activities
             Message = message;
         }
 
-        protected sealed override bool run(ILogger logger, MessageDbContext dbContext)
+        protected sealed override bool run(MessageDbContext dbContext)
         {
             dbContext.Messages.Add(new Message()
             {

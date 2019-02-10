@@ -17,37 +17,47 @@ namespace WFLite.EntityFrameworkCore.Bases
     public abstract class DbContextCondition<TDbContext> : LoggingCondition
         where TDbContext : DbContext
     {
-        private readonly TDbContext _dbContext;
+        private readonly Func<bool> _func;
 
-        private readonly Func<TDbContext> _dbContextFunc;
-
-        public DbContextCondition(TDbContext dbContext, ILogger logger = null)
-            : base(logger)
+        public DbContextCondition(TDbContext dbContext)
         {
-            _dbContext = dbContext;
+            _func = () => check(dbContext);
         }
 
-        public DbContextCondition(Func<TDbContext> dbContextFunc, ILogger logger = null)
-            : base(logger)
+        public DbContextCondition(Func<TDbContext> dbContextFunc)
         {
-            _dbContextFunc = dbContextFunc;
-        }
-
-        protected sealed override bool check(ILogger logger)
-        {
-            if (_dbContextFunc != null)
+            _func = () =>
             {
-                using (var dbContext = _dbContextFunc())
+                using (var dbContext = dbContextFunc())
                 {
-                    return check(logger, dbContext);
+                    return check(dbContext);
                 }
-            }
-            else
-            {
-                return check(logger, _dbContext);
-            }
+            };
         }
 
-        protected abstract bool check(ILogger logger, TDbContext dbContext);
+        public DbContextCondition(ILogger logger, TDbContext dbContext)
+            : base(logger)
+        {
+            _func = () => check(dbContext);
+        }
+
+        public DbContextCondition(ILogger logger, Func<TDbContext> dbContextFunc)
+            : base(logger)
+        {
+            _func = () =>
+            {
+                using (var dbContext = dbContextFunc())
+                {
+                    return check(dbContext);
+                }
+            };
+        }
+
+        protected sealed override bool check()
+        {
+            return _func();
+        }
+
+        protected abstract bool check(TDbContext dbContext);
     }
 }

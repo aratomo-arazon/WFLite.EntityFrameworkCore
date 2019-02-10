@@ -17,37 +17,47 @@ namespace WFLite.EntityFrameworkCore.Bases
     public abstract class DbContextSyncActivity<TDbContext> : LoggingSyncActivity
         where TDbContext : DbContext
     {
-        private readonly TDbContext _dbContext;
+        private readonly Func<bool> _func;
 
-        private readonly Func<TDbContext> _dbContextFunc;
+        public DbContextSyncActivity(TDbContext dbContext)
+        {
+            _func = () => run(dbContext);
+        }
+
+        public DbContextSyncActivity(Func<TDbContext> dbContextFunc)
+        {
+            _func = () =>
+            {
+                using (var dbContext = dbContextFunc())
+                {
+                    return run(dbContext);
+                }
+            };
+        }
 
         public DbContextSyncActivity(ILogger logger, TDbContext dbContext)
             : base(logger)
         {
-            _dbContext = dbContext;
+            _func = () => run(dbContext);
         }
 
         public DbContextSyncActivity(ILogger logger, Func<TDbContext> dbContextFunc)
             : base(logger)
         {
-            _dbContextFunc = dbContextFunc;
-        }
-
-        protected sealed override bool run(ILogger logger)
-        {
-            if (_dbContextFunc != null)
+            _func = () =>
             {
-                using (var dbContext = _dbContextFunc())
+                using (var dbContext = dbContextFunc())
                 {
-                    return run(logger, dbContext);
+                    return run(dbContext);
                 }
-            }
-            else
-            {
-                return run(logger, _dbContext);
-            }
+            };
         }
 
-        protected abstract bool run(ILogger logger, TDbContext dbContext);
+        protected sealed override bool run()
+        {
+            return _func();
+        }
+
+        protected abstract bool run(TDbContext dbContext);
     }
 }

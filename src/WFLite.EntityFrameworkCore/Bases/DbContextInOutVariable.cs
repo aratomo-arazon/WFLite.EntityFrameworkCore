@@ -18,198 +18,224 @@ namespace WFLite.EntityFrameworkCore.Bases
     public abstract class DbContextInOutVariable<TDbContext> : LoggingInOutVariable
         where TDbContext : DbContext
     {
-        private readonly TDbContext _dbContext;
+        private readonly Func<object> _func;
 
-        private readonly Func<TDbContext> _dbContextFunc;
+        private readonly Action<object> _action;
 
         public DbContextInOutVariable(ILogger logger, TDbContext dbContext)
             : base(logger)
         {
-            _dbContext = dbContext;
+            _func = () => getValue(dbContext);
+            _action = (value) => setValue(dbContext, value);
         }
 
         public DbContextInOutVariable(ILogger logger, TDbContext dbContext, IConverter converter = null)
             : base(logger, converter)
         {
-            _dbContext = dbContext;
+            _func = () => getValue(dbContext);
+            _action = (value) => setValue(dbContext, value);
         }
 
         public DbContextInOutVariable(ILogger logger, Func<TDbContext> dbContextFunc)
             : base(logger)
         {
-            _dbContextFunc = dbContextFunc;
+            _func = () =>
+            {
+                using (var dbContext = dbContextFunc())
+                {
+                    return getValue(dbContext);
+                }
+            };
+            _action = (value) =>
+            {
+                using (var dbContext = dbContextFunc())
+                {
+                    setValue(dbContext, value);
+                }
+            };
         }
 
         public DbContextInOutVariable(ILogger logger, Func<TDbContext> dbContextFunc, IConverter converter = null)
             : base(logger, converter)
         {
-            _dbContextFunc = dbContextFunc;
-        }
-
-        protected sealed override object getValue(ILogger logger)
-        {
-            if (_dbContextFunc != null)
+            _func = () =>
             {
-                using (var dbContext = _dbContextFunc())
+                using (var dbContext = dbContextFunc())
                 {
-                    return getValue(logger, dbContext);
+                    return getValue(dbContext);
                 }
-            }
-            else
+            };
+            _action = (value) =>
             {
-                return getValue(logger, _dbContext);
-            }
-        }
-
-        protected sealed override void setValue(ILogger logger, object value)
-        {
-            if (_dbContextFunc != null)
-            {
-                using (var dbContext = _dbContextFunc())
+                using (var dbContext = dbContextFunc())
                 {
-                    setValue(logger, dbContext, value);
+                    setValue(dbContext, value);
                 }
-            }
-            else
-            {
-                setValue(logger, _dbContext, value);
-            }
+            };
         }
 
-        protected abstract object getValue(ILogger logger, TDbContext dbContext);
+        protected sealed override object getValue()
+        {
+            return _func();
+        }
 
-        protected abstract void setValue(ILogger logger, TDbContext dbContext, object value);
+        protected sealed override void setValue(object value)
+        {
+            _action(value);
+        }
+
+        protected abstract object getValue(TDbContext dbContext);
+
+        protected abstract void setValue(TDbContext dbContext, object value);
     }
 
     public abstract class DbContextInOutVariable<TDbContext, TValue> : LoggingInOutVariable<TValue>
         where TDbContext : DbContext
     {
-        private readonly TDbContext _dbContext;
+        private readonly Func<object> _func;
 
-        private readonly Func<TDbContext> _dbContextFunc;
+        private readonly Action<object> _action;
 
-        public DbContextInOutVariable(ILogger logger, TDbContext dbContext)
-            : base(logger)
+        public DbContextInOutVariable(TDbContext dbContext, IConverter<TValue> converter = null)
+            : base(converter)
         {
-            _dbContext = dbContext;
+            _func = () => getValue(dbContext);
+            _action = (value) => setValue(dbContext, value);
+        }
+
+        public DbContextInOutVariable(Func<TDbContext> dbContextFunc, IConverter<TValue> converter = null)
+            : base(converter)
+        {
+            _func = () =>
+            {
+                using (var dbContext = dbContextFunc())
+                {
+                    return getValue(dbContext);
+                }
+            };
+            _action = (value) =>
+            {
+                using (var dbContext = dbContextFunc())
+                {
+                    setValue(dbContext, value);
+                }
+            };
         }
 
         public DbContextInOutVariable(ILogger logger, TDbContext dbContext, IConverter<TValue> converter = null)
             : base(logger, converter)
         {
-            _dbContext = dbContext;
-        }
-
-        public DbContextInOutVariable(ILogger logger, Func<TDbContext> dbContextFunc)
-            : base(logger)
-        {
-            _dbContextFunc = dbContextFunc;
+            _func = () => getValue(dbContext);
+            _action = (value) => setValue(dbContext, value);
         }
 
         public DbContextInOutVariable(ILogger logger, Func<TDbContext> dbContextFunc, IConverter<TValue> converter = null)
             : base(logger, converter)
         {
-            _dbContextFunc = dbContextFunc;
-        }
-
-        protected sealed override object getValue(ILogger logger)
-        {
-            if (_dbContextFunc != null)
+            _func = () =>
             {
-                using (var dbContext = _dbContextFunc())
+                using (var dbContext = dbContextFunc())
                 {
-                    return getValue(logger, dbContext);
+                    return getValue(dbContext);
                 }
-            }
-            else
+            };
+            _action = (value) =>
             {
-                return getValue(logger, _dbContext);
-            }
-        }
-
-        protected sealed override void setValue(ILogger logger, object value)
-        {
-            if (_dbContextFunc != null)
-            {
-                using (var dbContext = _dbContextFunc())
+                using (var dbContext = dbContextFunc())
                 {
-                    setValue(logger, dbContext, value);
+                    setValue(dbContext, value);
                 }
-            }
-            else
-            {
-                setValue(logger, _dbContext, value);
-            }
+            };
         }
 
-        protected abstract object getValue(ILogger logger, TDbContext dbContext);
+        protected sealed override object getValue()
+        {
+            return _func();
+        }
 
-        protected abstract void setValue(ILogger logger, TDbContext dbContext, object value);
+        protected sealed override void setValue(object value)
+        {
+            _action(value);
+        }
+
+        protected abstract object getValue(TDbContext dbContext);
+
+        protected abstract void setValue(TDbContext dbContext, object value);
     }
 
     public abstract class DbContextInOutVariable<TDbContext, TInValue, TOutValue> : LoggingInOutVariable<TInValue, TOutValue>
         where TDbContext : DbContext
     {
-        private readonly TDbContext _dbContext;
+        private readonly Func<object> _func;
 
-        private readonly Func<TDbContext> _dbContextFunc;
+        private readonly Action<object> _action;
 
-        public DbContextInOutVariable(ILogger logger, TDbContext dbContext)
-            : base(logger)
+        public DbContextInOutVariable(TDbContext dbContext, IConverter<TInValue, TOutValue> converter = null)
+            : base(converter)
         {
-            _dbContext = dbContext;
+            _func = () => getValue(dbContext);
+            _action = (value) => setValue(dbContext, value);
+        }
+
+
+        public DbContextInOutVariable(Func<TDbContext> dbContextFunc, IConverter<TInValue, TOutValue> converter = null)
+            : base(converter)
+        {
+            _func = () =>
+            {
+                using (var dbContext = dbContextFunc())
+                {
+                    return getValue(dbContext);
+                }
+            };
+            _action = (value) =>
+            {
+                using (var dbContext = dbContextFunc())
+                {
+                    setValue(dbContext, value);
+                }
+            };
         }
 
         public DbContextInOutVariable(ILogger logger, TDbContext dbContext, IConverter<TInValue, TOutValue> converter = null)
             : base(logger, converter)
         {
-            _dbContext = dbContext;
+            _func = () => getValue(dbContext);
+            _action = (value) => setValue(dbContext, value);
         }
 
-        public DbContextInOutVariable(ILogger logger, Func<TDbContext> dbContextFunc)
-            : base(logger)
-        {
-            _dbContextFunc = dbContextFunc;
-        }
 
         public DbContextInOutVariable(ILogger logger, Func<TDbContext> dbContextFunc, IConverter<TInValue, TOutValue> converter = null)
             : base(logger, converter)
         {
-            _dbContextFunc = dbContextFunc;
-        }
-
-        protected sealed override object getValue(ILogger logger)
-        {
-            if (_dbContextFunc != null)
+            _func = () =>
             {
-                using (var dbContext = _dbContextFunc())
+                using (var dbContext = dbContextFunc())
                 {
-                    return getValue(logger, dbContext);
+                    return getValue(dbContext);
                 }
-            }
-            else
+            };
+            _action = (value) =>
             {
-                return getValue(logger, _dbContext);
-            }
-        }
-
-        protected sealed override void setValue(ILogger logger, object value)
-        {
-            if (_dbContextFunc != null)
-            {
-                using (var dbContext = _dbContextFunc())
+                using (var dbContext = dbContextFunc())
                 {
-                    setValue(logger, dbContext, value);
+                    setValue(dbContext, value);
                 }
-            }
-            else
-            {
-                setValue(logger, _dbContext, value);
-            }
+            };
         }
 
-        protected abstract object getValue(ILogger logger, TDbContext dbContext);
+        protected sealed override object getValue()
+        {
+            return _func();
+        }
 
-        protected abstract void setValue(ILogger logger, TDbContext dbContext, object value);
+        protected sealed override void setValue(object value)
+        {
+            _action(value);
+        }
+
+        protected abstract object getValue(TDbContext dbContext);
+
+        protected abstract void setValue(TDbContext dbContext, object value);
     }
 }

@@ -15,7 +15,7 @@ namespace WFLite.EntityFrameworkCore.HelloWorld.Conditions
         {
         }
 
-        protected sealed override bool check(ILogger logger, MessageDbContext dbContext)
+        protected sealed override bool check(MessageDbContext dbContext)
         {
             return dbContext.Messages.Any();
         }
